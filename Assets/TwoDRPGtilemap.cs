@@ -15,4 +15,19 @@ public class TwoDRPGtilemap : MonoBehaviour
     {
         
     }
+
+    void GenerateMapString(int width, int height)
+    {
+
+    }
+
+    void ConvertMapToTilemap()
+    {
+
+    }
+
+    void LoadPremadeMap()
+    {
+
+    }
 }
