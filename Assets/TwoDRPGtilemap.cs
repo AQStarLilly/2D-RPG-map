@@ -13,7 +13,19 @@ public class TwoDRPGtilemap : MonoBehaviour
     private void Start()
     {
         string mapData = LoadPremadeMap("map1");
-        ConvertMapToTilemap(mapData);
+
+        if (string.IsNullOrEmpty(mapData))  //check if the pre-made map is empty or null
+        {
+            Debug.LogWarning("Pre-made map is empty or could not be loaded. Generating a random map instead.");
+
+            mapData = GenerateMapString(15, 10);  //fallback for generating a new map if pre-made one is missing
+        }
+        else
+        {
+            Debug.Log("Loaded pre-made map data:\n" + mapData);
+        }
+
+        ConvertMapToTilemap(mapData);    
     }
 
     public string LoadPremadeMap(string mapFilePath)
@@ -39,9 +51,9 @@ public class TwoDRPGtilemap : MonoBehaviour
 
         for(int y = 0; y < height; y++)
         {
-            string row = rows[y].Trim();
+            string row = rows[y].Trim();   //trim each row to remove any excess whitespace
 
-            if(row.Length != width)   //trim each row to remove any excess whitespace
+            if (row.Length != width)   //Ensure each row has correct width to avoid indexing errors
             {
                 Debug.LogError($"Row {y} has an inconsistent length. Expected {width}, got {row.Length}.");
                 continue;
