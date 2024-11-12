@@ -62,7 +62,7 @@ public class TwoDRPGtilemap : MonoBehaviour
             for(int x = 0; x < width; x++)
             {
                 char tileChar = row[x];
-                Vector3Int position = new Vector3Int(x, -y, 0);
+                Vector3Int position = new Vector3Int(x, y, 0);
 
                 switch (tileChar)
                 {

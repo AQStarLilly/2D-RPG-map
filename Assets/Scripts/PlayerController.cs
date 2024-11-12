@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public Vector3Int playerPosition;
     public Tilemap mapTilemap;
     private TwoDRPGtilemap mapScript;
+    private const float playerZPosition = -1f;
 
     // Start is called before the first frame update
     void Start()
@@ -21,10 +22,13 @@ public class PlayerController : MonoBehaviour
         }
 
         playerPosition = FindValidSpawnPosition();
+        Debug.Log($"Player tile position is {playerPosition}");
 
         Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+        Debug.Log($"World position before setting Z: {worldPosition}");
 
-        worldPosition.z = 0;
+        worldPosition.z = transform.position.z;
+        Debug.Log($"Final world position: {worldPosition}");
 
         transform.position = worldPosition;
     }
@@ -45,7 +49,10 @@ public class PlayerController : MonoBehaviour
             if (IsValidPosition(newPosition))
             {
                 playerPosition = newPosition;
-                transform.position = mapTilemap.CellToWorld(playerPosition);
+                Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+                worldPosition.z = playerZPosition;
+
+                transform.position = worldPosition;
             }
         }
     }
@@ -58,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
         bool foundValidPosition = false;
         while (!foundValidPosition)
-        {
+        {         
             spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);
 
             TileBase tile = mapTilemap.GetTile(spawnPosition);
