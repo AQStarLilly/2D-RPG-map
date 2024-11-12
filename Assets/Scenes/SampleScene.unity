@@ -228,7 +228,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 0.91
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -253,7 +253,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 1.13, y: -0.66, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -387,6 +387,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35b2f02560bfc744da6e77c41b0f0f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tilemap: {fileID: 671548268}
+  wallTile: {fileID: 11400000, guid: 2df500a116c40a24c9c03772a624ec0a, type: 2}
+  floorTile: {fileID: 11400000, guid: e7d35920943c58044a58a743005bf5c4, type: 2}
+  doorTile: {fileID: 11400000, guid: 2bf7102217ec7c54fa09c9f8af259680, type: 2}
+  chestTile: {fileID: 11400000, guid: 89eb7a70cf06f17448625af64f347c1f, type: 2}
 --- !u!483693784 &671548267
 TilemapRenderer:
   m_ObjectHideFlags: 0
