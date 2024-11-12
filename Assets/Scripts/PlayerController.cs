@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -19,9 +20,13 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        playerPosition = FindValidSpawnPosition();
 
-        playerPosition = mapTilemap.WorldToCell(transform.position);
-        MovePlayer(Vector3Int.zero);   //initialize position on tilemap
+        Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+
+        worldPosition.z = 0;
+
+        transform.position = worldPosition;
     }
 
     // Update is called once per frame
@@ -33,21 +38,51 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A)) moveDirection = Vector3Int.left;
         if (Input.GetKeyDown(KeyCode.D)) moveDirection = Vector3Int.right;
 
-        if(moveDirection != Vector3Int.zero)
+        if (moveDirection != Vector3Int.zero)
         {
             Vector3Int newPosition = playerPosition + moveDirection;
-            TileBase tile = mapTilemap.GetTile(newPosition);
 
-            if (tile != mapScript.wallTile && tile != mapScript.chestTile)
+            if (IsValidPosition(newPosition))
             {
-                MovePlayer(moveDirection);
+                playerPosition = newPosition;
+                transform.position = mapTilemap.CellToWorld(playerPosition);
             }
         }
     }
 
-    void MovePlayer(Vector3Int moveDirection)
+    Vector3Int FindValidSpawnPosition()
     {
-        playerPosition += moveDirection;
-        transform.position = mapTilemap.CellToWorld(playerPosition);
+        Vector3Int spawnPosition = Vector3Int.zero;
+        int mapWidth = mapTilemap.size.x;
+        int mapHeight = mapTilemap.size.y;
+
+        bool foundValidPosition = false;
+        while (!foundValidPosition)
+        {
+            spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);
+
+            TileBase tile = mapTilemap.GetTile(spawnPosition);
+            if(tile != mapScript.wallTile && tile != mapScript.chestTile)
+            {
+                foundValidPosition = true;
+            }
+        }
+        return spawnPosition;
+    }
+
+    bool IsValidPosition(Vector3Int position)
+    {
+        if(position.x < 0 || position.x >= mapTilemap.size.x || position.y < 0 || position.y >= mapTilemap.size.y)
+        {
+            return false;
+        }
+
+        TileBase tile = mapTilemap.GetTile(position);
+        if(tile == mapScript.wallTile || tile == mapScript.chestTile)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
