@@ -4,15 +4,15 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class PlayerController : MonoBehaviour
+public class Player2Controller : MonoBehaviour
 {
-    public Vector3Int playerPosition;
+    public Vector3Int player2Position;
     public Tilemap mapTilemap;
     private TwoDRPGtilemap mapScript;
     private const float playerZPosition = -1f;
 
     // Start is called before the first frame update
-    void Start()
+    void Start()   //player 2 spawning outside the map or in walls occassionally
     {
         mapScript = FindObjectOfType<TwoDRPGtilemap>();
         if(mapScript == null)
@@ -21,10 +21,10 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        playerPosition = FindValidSpawnPosition();
-        Debug.Log($"Player tile position is {playerPosition}");
+        player2Position = FindValidSpawnPosition();
+        Debug.Log($"Player 2 tile position is {player2Position}");
 
-        Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+        Vector3 worldPosition = mapTilemap.CellToWorld(player2Position);
         Debug.Log($"World position before setting Z: {worldPosition}");
 
         worldPosition.z = transform.position.z;
@@ -37,19 +37,19 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Vector3Int moveDirection = Vector3Int.zero;
-        if (Input.GetKeyDown(KeyCode.W)) moveDirection = Vector3Int.up;
-        if (Input.GetKeyDown(KeyCode.S)) moveDirection = Vector3Int.down;
-        if (Input.GetKeyDown(KeyCode.A)) moveDirection = Vector3Int.left;
-        if (Input.GetKeyDown(KeyCode.D)) moveDirection = Vector3Int.right;
+        if (Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Vector3Int.up;
+        if (Input.GetKeyDown(KeyCode.DownArrow)) moveDirection = Vector3Int.down;
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) moveDirection = Vector3Int.left;
+        if (Input.GetKeyDown(KeyCode.RightArrow)) moveDirection = Vector3Int.right;
 
         if (moveDirection != Vector3Int.zero)
         {
-            Vector3Int newPosition = playerPosition + moveDirection;
+            Vector3Int newPosition = player2Position + moveDirection;
 
             if (IsValidPosition(newPosition))
             {
-                playerPosition = newPosition;
-                Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+                player2Position = newPosition;
+                Vector3 worldPosition = mapTilemap.CellToWorld(player2Position);
                 worldPosition.z = playerZPosition;
 
                 transform.position = worldPosition;
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
         bool foundValidPosition = false;
         while (!foundValidPosition)
-        {         
+        {
             spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);
 
             TileBase tile = mapTilemap.GetTile(spawnPosition);

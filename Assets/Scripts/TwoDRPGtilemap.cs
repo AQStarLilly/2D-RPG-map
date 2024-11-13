@@ -18,7 +18,7 @@ public class TwoDRPGtilemap : MonoBehaviour
         {
             Debug.LogWarning("Pre-made map is empty or could not be loaded. Generating a random map instead.");
 
-            mapData = GenerateMapString(15, 10);  //fallback for generating a new map if pre-made one is missing
+            mapData = GenerateMapString(15, 10);  //fallback for generating a new map if pre-made one is missing - try to add any size capabilities to an extent if possible, although not needed
         }
         else
         {
@@ -28,7 +28,7 @@ public class TwoDRPGtilemap : MonoBehaviour
         ConvertMapToTilemap(mapData);    
     }
 
-    public string LoadPremadeMap(string mapFilePath)
+    public string LoadPremadeMap(string mapFilePath)   //change to work with any map name and only work if the map is at least 15 x 10 or bigger
     {
         TextAsset mapTextAsset = Resources.Load<TextAsset>(mapFilePath);
         return mapTextAsset != null ? mapTextAsset.text : null;
