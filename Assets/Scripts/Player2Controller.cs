@@ -12,7 +12,7 @@ public class Player2Controller : MonoBehaviour
     private const float playerZPosition = -1f;
 
     // Start is called before the first frame update
-    void Start()   //player 2 spawning outside the map or in walls occassionally
+    void Start()   
     {
         mapScript = FindObjectOfType<TwoDRPGtilemap>();
         if(mapScript == null)

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 
 public class TwoDRPGtilemap : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class TwoDRPGtilemap : MonoBehaviour
 
     private void Start()
     {
-        string mapData = LoadPremadeMap("map1");
+        string mapData = LoadPremadeMap();
 
         if (string.IsNullOrEmpty(mapData))  //check if the pre-made map is empty or null
         {
@@ -28,10 +29,23 @@ public class TwoDRPGtilemap : MonoBehaviour
         ConvertMapToTilemap(mapData);    
     }
 
-    public string LoadPremadeMap(string mapFilePath)   //change to work with any map name and only work if the map is at least 15 x 10 or bigger
+    public string LoadPremadeMap() 
     {
-        TextAsset mapTextAsset = Resources.Load<TextAsset>(mapFilePath);
-        return mapTextAsset != null ? mapTextAsset.text : null;
+        TextAsset[] mapFiles = Resources.LoadAll<TextAsset>("");
+        
+        foreach(TextAsset mapFile in mapFiles)
+        {
+            string mapData = mapFile.text;
+            string[] rows = mapData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if(rows.Length >=10 &&  rows[0].Trim().Length >= 15)
+            {
+                Debug.Log("Found valid map file: " + mapFile.name);
+                return mapData;
+            }
+        }
+        Debug.LogWarning("No valid map files found with the minimum dimensions of 15x10.");
+        return null;       
     }
 
 
