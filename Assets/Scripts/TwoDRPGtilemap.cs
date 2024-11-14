@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Collections.Generic;
 
 public class TwoDRPGtilemap : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class TwoDRPGtilemap : MonoBehaviour
         {
             Debug.LogWarning("Pre-made map is empty or could not be loaded. Generating a random map instead.");
 
-            mapData = GenerateMapString(15, 10);  //fallback for generating a new map if pre-made one is missing - try to add any size capabilities to an extent if possible, although not needed
+            mapData = GenerateMapString(15, 10);  //fallback for generating a new map if pre-made one is missing - try to add any size capabilities to an extent if possible, although not needed         
         }
         else
         {
@@ -51,7 +52,7 @@ public class TwoDRPGtilemap : MonoBehaviour
 
     public void ConvertMapToTilemap(String mapData)
     {
-        if (mapData == null)
+        if (string.IsNullOrEmpty(mapData))//mapData == null)
         {
             Debug.LogError("Map data is empty or could not be loaded.");
             return;
@@ -63,7 +64,7 @@ public class TwoDRPGtilemap : MonoBehaviour
         int height = rows.Length;
         int width = rows[0].Trim().Length;  //Ensure consistent width by using the first row's trimmed length
 
-        for(int y = 0; y < height; y++)
+        for (int y = 0; y < height; y++)
         {
             string row = rows[y].Trim();   //trim each row to remove any excess whitespace
 
@@ -73,7 +74,7 @@ public class TwoDRPGtilemap : MonoBehaviour
                 continue;
             }
 
-            for(int x = 0; x < width; x++)
+            for (int x = 0; x < width; x++)
             {
                 char tileChar = row[x];
                 Vector3Int position = new Vector3Int(x, y, 0);
@@ -102,7 +103,8 @@ public class TwoDRPGtilemap : MonoBehaviour
     {
         System.Text.StringBuilder mapString = new System.Text.StringBuilder();
         mapArray = new char[height, width];
-
+     
+        //create wall borders
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -110,27 +112,78 @@ public class TwoDRPGtilemap : MonoBehaviour
                 //place walls for border
                 if (y == 0 || y == height - 1 || x == 0 || x == width - 1)
                 {
-                    mapString.Append('#');
-                    mapArray[y, x] = '#';
+                    mapArray[y, x] = '#'; //border wall
                 }
                 else
                 {
-                    char tileChar = ' ';
-                    if (UnityEngine.Random.Range(0, 10) < 2)
-                    {
-                        tileChar = '$';  //random chance for a chest
-                    }
-                    else if (UnityEngine.Random.Range(0, 10) < 2)
-                    {
-                        tileChar = 'O';  //random chance for a door
-                    }
-
-                    mapString.Append(tileChar);
-                    mapArray[y, x] = tileChar;
+                    mapArray[y, x] = ' '; //empty floor by default
                 }
+                mapString.Append(mapArray[y, x]);
             }
             mapString.AppendLine();
         }
+
+        List<Vector2Int> possibleDoorPositions = new List<Vector2Int>();
+
+        for(int y = 1; y < height - 1; y++)
+        {
+            possibleDoorPositions.Add(new Vector2Int(0, y));            //Left wall
+            possibleDoorPositions.Add(new Vector2Int(width - 1, y));    //Right wall
+        }
+
+        for (int x = 1; x < width - 1; x++)
+        {
+            possibleDoorPositions.Add(new Vector2Int(x, 0));            //Top wall
+            possibleDoorPositions.Add(new Vector2Int(x, height - 1));   //Bottom wall
+        }
+
+        int doorCount = UnityEngine.Random.Range(1, 5);  //min 1, max 4 doors
+        for(int i = 0; i < doorCount && possibleDoorPositions.Count > 0; i++)
+        {
+            int index = UnityEngine.Random.Range(0, possibleDoorPositions.Count);
+            Vector2Int doorPosition = possibleDoorPositions[index];
+            possibleDoorPositions.RemoveAt(index);   //remove chosen position to avoid duplicates
+        
+            mapArray[doorPosition.y, doorPosition.x] = 'O';  //place doors
+        }
+
+        //Place chests in the corners if available
+        List<Vector2Int> cornerPositions = new List<Vector2Int>
+        {
+            new Vector2Int(1, 1),                        //Top-left corner
+            new Vector2Int(1, height - 2),               //bottom-left corner
+            new Vector2Int(width - 2, 1),                //top-right corner
+            new Vector2Int(width - 2, height - 2)        //bottom-right corner
+        };
+
+        foreach(Vector2Int corner in cornerPositions)
+        {
+            if(UnityEngine.Random.Range(0, 2) == 0)
+            {
+                if(corner.y >= 0 && corner.y < height && corner.x >= 0 && corner.x < width)
+                {
+                    mapArray[corner.y, corner.x] = '$';
+                    Debug.Log($"Placed chest at corner ({corner.x}, {corner.y})");
+                }
+                else
+                {
+                    Debug.LogWarning($"Corner position {corner} is out of bounds for map size {width}x{height}");
+                }
+            }                           
+        }
+
+        //Build the map string
+        mapString.Clear();
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                mapString.Append(mapArray[y, x]);
+            }
+            mapString.AppendLine();
+        }
+        Debug.Log("Generated Map:\n" + mapString.ToString());
+
         return mapString.ToString();
     }
 }
