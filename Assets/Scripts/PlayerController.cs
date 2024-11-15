@@ -6,90 +6,90 @@ using UnityEngine.Tilemaps;
 
 public class PlayerController : MonoBehaviour
 {
-    public Vector3Int playerPosition;
-    public Tilemap mapTilemap;
-    private TwoDRPGtilemap mapScript;
+    public Vector3Int playerPosition;  //players position on the map in tile coordinates
+    public Tilemap mapTilemap;   //reference to the tilemap where the map is stored
+    private TwoDRPGtilemap mapScript;   //reference to the TwoDRPGtilemap script to access tile data
     private const float playerZPosition = -1f;  //makes sure player spawns above map instead of below
 
     // Start is called before the first frame update
     void Start()
     {
-        mapScript = FindObjectOfType<TwoDRPGtilemap>();
-        if(mapScript == null)
+        mapScript = FindObjectOfType<TwoDRPGtilemap>();  //Find the TwoDRPGtilemap script in the scene
+        if(mapScript == null)  //check if it was found, otherwise log as error
         {
             Debug.LogError("TwoDRPGtilemap not found in scene.");
             return;
         }
 
-        playerPosition = FindValidSpawnPosition();
-        Debug.Log($"Player tile position is {playerPosition}");
+        playerPosition = FindValidSpawnPosition();  //find a valid spawn position for the player
+        Debug.Log($"Player tile position is {playerPosition}");  
 
-        Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+        Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);  //convert the player position from tile cords to world position
         Debug.Log($"World position before setting Z: {worldPosition}");
 
-        worldPosition.z = transform.position.z;
+        worldPosition.z = transform.position.z;   //set the player's world position with the correct z value
         Debug.Log($"Final world position: {worldPosition}");
 
-        transform.position = worldPosition;
+        transform.position = worldPosition;   //set the player's transform to the new world position
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3Int moveDirection = Vector3Int.zero;
+        Vector3Int moveDirection = Vector3Int.zero;  //initialize move direction as zero
         if (Input.GetKeyDown(KeyCode.W)) moveDirection = Vector3Int.up;
         if (Input.GetKeyDown(KeyCode.S)) moveDirection = Vector3Int.down;
         if (Input.GetKeyDown(KeyCode.A)) moveDirection = Vector3Int.left;
         if (Input.GetKeyDown(KeyCode.D)) moveDirection = Vector3Int.right;
 
-        if (moveDirection != Vector3Int.zero)
+        if (moveDirection != Vector3Int.zero)  //if a movement direction was input
         {
-            Vector3Int newPosition = playerPosition + moveDirection;
+            Vector3Int newPosition = playerPosition + moveDirection;  //calc the new player pos based on the move direction
 
-            if (IsValidPosition(newPosition))
+            if (IsValidPosition(newPosition))  //check if new pos is valid
             {
-                playerPosition = newPosition;
-                Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
-                worldPosition.z = playerZPosition;
+                playerPosition = newPosition;   //update player pos
+                Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);   //convert the new player pos to world coordinates
+                worldPosition.z = playerZPosition;   //ensure player's z position doesn't change
 
                 transform.position = worldPosition;
             }
         }
     }
 
-    Vector3Int FindValidSpawnPosition()
+    Vector3Int FindValidSpawnPosition()   //finds a random valid spawn point for player
     {
-        Vector3Int spawnPosition = Vector3Int.zero;
-        int mapWidth = mapTilemap.size.x;
-        int mapHeight = mapTilemap.size.y;
+        Vector3Int spawnPosition = Vector3Int.zero;  
+        int mapWidth = mapTilemap.size.x;    //get width of map
+        int mapHeight = mapTilemap.size.y;   //get height of map
 
-        bool foundValidPosition = false;
-        while (!foundValidPosition)
-        {         
-            spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);
+        bool foundValidPosition = false;   //flag to track when valid pos if found
+        while (!foundValidPosition)   //loop until a valid pos is found
+        {          
+            spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);    //randomly generate a spawn position within bounds of map
 
-            TileBase tile = mapTilemap.GetTile(spawnPosition);
-            if(tile != mapScript.wallTile && tile != mapScript.chestTile)
+            TileBase tile = mapTilemap.GetTile(spawnPosition);   //get the tile at spawn position
+            if(tile != mapScript.wallTile && tile != mapScript.chestTile)   //check if tile is now a wall or chest (invalid tiles)
             {
-                foundValidPosition = true;
+                foundValidPosition = true;   //found pos valid, exit loop
             }
         }
-        return spawnPosition;
+        return spawnPosition;   //return valid spawn pos
     }
 
-    bool IsValidPosition(Vector3Int position)
+    bool IsValidPosition(Vector3Int position)   //check if a given position is a valid move (not outside bounds or invalid tile)
     {
-        if(position.x < 0 || position.x >= mapTilemap.size.x || position.y < 0 || position.y >= mapTilemap.size.y)
+        if(position.x < 0 || position.x >= mapTilemap.size.x || position.y < 0 || position.y >= mapTilemap.size.y)  //ensure position is within bounds
         {
-            return false;
+            return false; 
         }
 
-        TileBase tile = mapTilemap.GetTile(position);
-        if(tile == mapScript.wallTile || tile == mapScript.chestTile)
+        TileBase tile = mapTilemap.GetTile(position);  //get tile at given pos
+        if(tile == mapScript.wallTile || tile == mapScript.chestTile)   //check if tile is a wall or chest tile
         {
-            return false;
+            return false;  //pos is invalid
         }
 
-        return true;
+        return true;  //pos is valid
     }
 }

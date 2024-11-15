@@ -24,6 +24,7 @@ public class PauseManager : MonoBehaviour
         }
     }
 
+    //doesn't fully work as I'm not using physics in this game and forgot that fact while doing this
     public void TogglePause()
     {
         isPaused = !isPaused;
