@@ -3,7 +3,14 @@ guid: 35b2f02560bfc744da6e77c41b0f0f42
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - tilemap: {instanceID: 0}
+  - wallTile: {instanceID: 0}
+  - floorTile: {instanceID: 0}
+  - doorTile: {instanceID: 0}
+  - chestTile: {instanceID: 0}
+  - player1: {instanceID: 0}
+  - player2: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

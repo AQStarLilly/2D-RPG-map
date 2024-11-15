@@ -27,7 +27,7 @@ public class TwoDRPGtilemap : MonoBehaviour
             Debug.Log("Loaded pre-made map data:\n" + mapData);
         }
 
-        ConvertMapToTilemap(mapData);    
+        ConvertMapToTilemap(mapData);  
     }
 
     public string LoadPremadeMap() 
@@ -52,7 +52,7 @@ public class TwoDRPGtilemap : MonoBehaviour
 
     public void ConvertMapToTilemap(String mapData)
     {
-        if (string.IsNullOrEmpty(mapData))//mapData == null)
+        if (string.IsNullOrEmpty(mapData))
         {
             Debug.LogError("Map data is empty or could not be loaded.");
             return;

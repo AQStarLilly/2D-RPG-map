@@ -9,7 +9,7 @@ public class Player2Controller : MonoBehaviour
     public Vector3Int player2Position;
     public Tilemap mapTilemap;
     private TwoDRPGtilemap mapScript;
-    private const float playerZPosition = -1f;
+    private const float playerZPosition = -1f;  //makes sure player spawns above map instead of below
 
     // Start is called before the first frame update
     void Start()   
