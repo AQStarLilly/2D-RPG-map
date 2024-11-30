@@ -1046,7 +1046,6 @@ GameObject:
   - component: {fileID: 1087414672}
   - component: {fileID: 1087414671}
   - component: {fileID: 1087414670}
-  - component: {fileID: 1087414673}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1068,6 +1067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPosition: {x: 0, y: 0, z: 0}
   mapTilemap: {fileID: 671548268}
+  isPlayer1: 1
 --- !u!212 &1087414671
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1135,22 +1135,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1087414673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1087414669}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d14dc0b24e436264d82bfbcc842c3fe6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
-  healthStatus: Perfect Health
-  shield: 100
-  lives: 3
 --- !u!1 &1221639819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1340,7 +1324,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1724204048}
   - component: {fileID: 1724204047}
-  - component: {fileID: 1724204046}
+  - component: {fileID: 1724204049}
   m_Layer: 0
   m_Name: Player 2
   m_TagString: Untagged
@@ -1348,20 +1332,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &1724204046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1724204045}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85ed7ad4a2d896d4284d733fbbc912c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player2Position: {x: 0, y: 0, z: 0}
-  mapTilemap: {fileID: 671548268}
 --- !u!212 &1724204047
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1429,6 +1399,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1724204049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724204045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5ad327608da4404888ec1bb54dc8521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPosition: {x: 0, y: 0, z: 0}
+  mapTilemap: {fileID: 671548268}
+  isPlayer1: 0
 --- !u!1 &1917910909
 GameObject:
   m_ObjectHideFlags: 0

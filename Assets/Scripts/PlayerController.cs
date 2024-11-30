@@ -10,6 +10,12 @@ public class PlayerController : MonoBehaviour
     public Tilemap mapTilemap;   //reference to the tilemap where the map is stored
     private TwoDRPGtilemap mapScript;   //reference to the TwoDRPGtilemap script to access tile data
     private const float playerZPosition = -1f;  //makes sure player spawns above map instead of below
+    public bool isPlayer1 = true;  //checkl if player 1 or 2
+
+    private KeyCode upKey;
+    private KeyCode downKey;
+    private KeyCode leftKey;
+    private KeyCode rightKey;
 
     // Start is called before the first frame update
     void Start()
@@ -21,8 +27,23 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        if (isPlayer1)
+        {
+            upKey = KeyCode.W;
+            downKey = KeyCode.S;
+            leftKey = KeyCode.A;
+            rightKey = KeyCode.D;
+        }
+        else
+        {
+            upKey = KeyCode.UpArrow;
+            downKey = KeyCode.DownArrow;
+            leftKey = KeyCode.LeftArrow;
+            rightKey = KeyCode.RightArrow;
+        }
+
         playerPosition = FindValidSpawnPosition();  //find a valid spawn position for the player
-        Debug.Log($"Player tile position is {playerPosition}");  
+        Debug.Log($"Player {(isPlayer1 ? "1" : "2")} tile position is {playerPosition}");
 
         Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);  //convert the player position from tile cords to world position
         Debug.Log($"World position before setting Z: {worldPosition}");
@@ -37,10 +58,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Vector3Int moveDirection = Vector3Int.zero;  //initialize move direction as zero
-        if (Input.GetKeyDown(KeyCode.W)) moveDirection = Vector3Int.up;
-        if (Input.GetKeyDown(KeyCode.S)) moveDirection = Vector3Int.down;
-        if (Input.GetKeyDown(KeyCode.A)) moveDirection = Vector3Int.left;
-        if (Input.GetKeyDown(KeyCode.D)) moveDirection = Vector3Int.right;
+        if (Input.GetKeyDown(upKey)) moveDirection = Vector3Int.up;
+        if (Input.GetKeyDown(downKey)) moveDirection = Vector3Int.down;
+        if (Input.GetKeyDown(leftKey)) moveDirection = Vector3Int.left;
+        if (Input.GetKeyDown(rightKey)) moveDirection = Vector3Int.right;
 
         if (moveDirection != Vector3Int.zero)  //if a movement direction was input
         {
