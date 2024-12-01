@@ -74,6 +74,8 @@ public class PlayerController : MonoBehaviour
                 worldPosition.z = playerZPosition;   //ensure player's z position doesn't change
 
                 transform.position = worldPosition;
+
+                FindObjectOfType<EnemyController>().TriggerEnemyTurn();
             }
         }
     }
