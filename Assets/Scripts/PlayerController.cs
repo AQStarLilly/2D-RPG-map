@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private TwoDRPGtilemap mapScript;   //reference to the TwoDRPGtilemap script to access tile data
     private const float playerZPosition = -1f;  //makes sure player spawns above map instead of below
     public bool isPlayer1 = true;  //checkl if player 1 or 2
+    public bool isTurnActive = false;
 
     private KeyCode upKey;
     private KeyCode downKey;
@@ -54,9 +55,16 @@ public class PlayerController : MonoBehaviour
         transform.position = worldPosition;   //set the player's transform to the new world position
     }
 
+    public void StartTurn()
+    {
+        isTurnActive = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (!isTurnActive) return;
+        
         Vector3Int moveDirection = Vector3Int.zero;  //initialize move direction as zero
         if (Input.GetKeyDown(upKey)) moveDirection = Vector3Int.up;
         if (Input.GetKeyDown(downKey)) moveDirection = Vector3Int.down;
@@ -72,10 +80,10 @@ public class PlayerController : MonoBehaviour
                 playerPosition = newPosition;   //update player pos
                 Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);   //convert the new player pos to world coordinates
                 worldPosition.z = playerZPosition;   //ensure player's z position doesn't change
-
                 transform.position = worldPosition;
 
-                FindObjectOfType<EnemyController>().TriggerEnemyTurn();
+                isTurnActive = false;
+                FindObjectOfType<TurnManager>().EndPlayerTurn();
             }
         }
     }

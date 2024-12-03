@@ -5,18 +5,20 @@ using UnityEngine.Tilemaps;
 
 public class EnemyController : MonoBehaviour
 {
-    public Tilemap mapTilemap;       // Reference to the map tilemap
-    public TwoDRPGtilemap mapScript; // Reference to the TwoDRPGtilemap script
     public Vector3Int enemyPosition; // Enemy's position in tile coordinates
+    public Tilemap mapTilemap;       // Reference to the map tilemap
+    private TwoDRPGtilemap mapScript; // Reference to the TwoDRPGtilemap script
     public Transform player;         // Reference to the player object
-    private bool isEnemyTurn = false; // Determines if it's the enemy's turn
     private const float enemyZPosition = -1f;
+    private bool isTurnActive = false; // Determines if it's the enemy's turn
 
 
-    private void Start()
+    void Start()
     {
-        if(mapScript == null || mapTilemap == null || player == null)
+        mapScript = FindObjectOfType<TwoDRPGtilemap>();
+        if (mapScript == null)  //check if it was found, otherwise log as error
         {
+            Debug.LogError("TwoDRPGtilemap not found in scene.");
             return;
         }
 
@@ -26,18 +28,18 @@ public class EnemyController : MonoBehaviour
         transform.position = worldPosition;
     }
 
-    private void Update()
+    public void StartTurn()
     {
-        if (isEnemyTurn)
-        {
-            MoveTowardPlayer();
-            isEnemyTurn = false;  //End the enemy's turn
-        }
+        isTurnActive = true;      
+        StartCoroutine(EnemyTurnCoroutine());      
     }
 
-    public void TriggerEnemyTurn()
-    {
-        isEnemyTurn = true;
+    private IEnumerator EnemyTurnCoroutine()
+    {     
+        yield return new WaitForSeconds(0.5f);
+        MoveTowardPlayer();
+        isTurnActive = false;
+        FindObjectOfType<TurnManager>().EndEnemyTurn();
     }
 
     private void MoveTowardPlayer()
@@ -61,27 +63,27 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private Vector3Int FindValidSpawnPosition()
+    Vector3Int FindValidSpawnPosition()
     {
         Vector3Int spawnPosition = Vector3Int.zero;
-        int mapWidth = mapTilemap.size.x;    //get width of map
-        int mapHeight = mapTilemap.size.y;   //get height of map
+        int mapWidth = mapTilemap.size.x;
+        int mapHeight = mapTilemap.size.y;
 
-        bool foundValidPosition = false;   //flag to track when valid pos if found
-        while (!foundValidPosition)   //loop until a valid pos is found
+        bool foundValidPosition = false;
+        while (!foundValidPosition)
         {
-            spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);    //randomly generate a spawn position within bounds of map
+            spawnPosition = new Vector3Int(Random.Range(1, mapWidth - 1), Random.Range(1, mapHeight - 1), 0);
 
-            TileBase tile = mapTilemap.GetTile(spawnPosition);   //get the tile at spawn position
-            if (tile != mapScript.wallTile && tile != mapScript.chestTile)   //check if tile is now a wall or chest (invalid tiles)
+            TileBase tile = mapTilemap.GetTile(spawnPosition);
+            if (tile != mapScript.wallTile && tile != mapScript.chestTile)
             {
-                foundValidPosition = true;   //found pos valid, exit loop
+                foundValidPosition = true;
             }
         }
-        return spawnPosition;   //return valid spawn pos
+        return spawnPosition;
     }
 
-    private bool IsValidPosition(Vector3Int position)
+    bool IsValidPosition(Vector3Int position)
     {
         if (position.x < 0 || position.x >= mapTilemap.size.x || position.y < 0 || position.y >= mapTilemap.size.y)
         {
@@ -89,6 +91,11 @@ public class EnemyController : MonoBehaviour
         }
 
         TileBase tile = mapTilemap.GetTile(position);
-        return tile != mapScript.wallTile && tile != mapScript.chestTile;
+        if (tile == mapScript.wallTile || tile == mapScript.chestTile)   //check if tile is a wall or chest tile
+        {
+            return false;  //pos is invalid
+        }
+
+        return true;  //pos is valid
     }
 }
