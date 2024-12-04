@@ -20,12 +20,14 @@ public class EnemyController : MonoBehaviour
         {
             Debug.LogError("TwoDRPGtilemap not found in scene.");
             return;
-        }
+        }       
 
         enemyPosition = FindValidSpawnPosition();
         Vector3 worldPosition = mapTilemap.CellToWorld(enemyPosition);
         worldPosition.z = enemyZPosition;
         transform.position = worldPosition;
+
+        EnemyManager.Instance.RegisterEnemy(enemyPosition, this);
     }
 
     public void StartTurn()
@@ -61,6 +63,11 @@ public class EnemyController : MonoBehaviour
             worldPosition.z = enemyZPosition;
             transform.position = worldPosition;
         }
+    }
+
+    private void OnDestroy()
+    {
+        EnemyManager.Instance.UnregisterEnemy(enemyPosition);
     }
 
     Vector3Int FindValidSpawnPosition()

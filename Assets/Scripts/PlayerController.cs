@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     public bool isPlayer1 = true;  //checkl if player 1 or 2
     public bool isTurnActive = false;
 
+    public int attackDamage = 10;
+
     private KeyCode upKey;
     private KeyCode downKey;
     private KeyCode leftKey;
@@ -75,17 +77,41 @@ public class PlayerController : MonoBehaviour
         {
             Vector3Int newPosition = playerPosition + moveDirection;  //calc the new player pos based on the move direction
 
-            if (IsValidPosition(newPosition))  //check if new pos is valid
+            Vector3Int targetTilePosition = mapTilemap.WorldToCell(mapTilemap.CellToWorld(newPosition));
+
+            // Check for an enemy at the target position
+            EnemyController enemy = EnemyManager.Instance.GetEnemyAtPosition(targetTilePosition);
+            if (enemy != null)
+            {
+                AttackEnemy(enemy);
+            }
+            else if (IsValidPosition(newPosition))  //check if new pos is valid
             {
                 playerPosition = newPosition;   //update player pos
                 Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);   //convert the new player pos to world coordinates
                 worldPosition.z = playerZPosition;   //ensure player's z position doesn't change
                 transform.position = worldPosition;
 
-                isTurnActive = false;
-                FindObjectOfType<TurnManager>().EndPlayerTurn();
+                EndTurn();
             }
         }
+    }
+
+    void AttackEnemy(EnemyController enemy)
+    {
+        HealthSystem enemyHealth = enemy.GetComponent<HealthSystem>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.TakeDamage(attackDamage);
+            Debug.Log($"Player attacked {enemy.name}, dealing {attackDamage} damage!");
+        }
+        EndTurn();
+    }
+
+    void EndTurn()
+    {
+        isTurnActive = false;
+        FindObjectOfType<TurnManager>().EndPlayerTurn();
     }
 
     Vector3Int FindValidSpawnPosition()   //finds a random valid spawn point for player
