@@ -9,13 +9,14 @@ public class HealthSystem : MonoBehaviour
     private int currentHealth;
     public TextMeshProUGUI healthDisplay;
 
+    //delegate and event for handling death notifications
     public delegate void OnDeathEvent(GameObject obj);
     public static event OnDeathEvent OnDeath;
 
     void Start()
     {
-        currentHealth = maxHealth;
-        UpdateHealthDisplay();
+        currentHealth = maxHealth;  //set current health to max
+        UpdateHealthDisplay();  //Update Ui to reflect that
     }
 
     public void TakeDamage(int damage)
