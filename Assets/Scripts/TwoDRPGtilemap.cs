@@ -33,6 +33,7 @@ public class TwoDRPGtilemap : MonoBehaviour
     public string LoadPremadeMap()   //load premade map from resources file
     {
         TextAsset[] mapFiles = Resources.LoadAll<TextAsset>("");  //load all textAsset files from resources folder
+        List<String> validMaps = new List<String>();
 
         foreach (TextAsset mapFile in mapFiles)  //iterate through each map file and check if it meets the required dimensions
         {
@@ -42,9 +43,17 @@ public class TwoDRPGtilemap : MonoBehaviour
             if (rows.Length >= 10 && rows[0].Trim().Length >= 15)  //check for minimum dimensions
             {
                 Debug.Log("Found valid map file: " + mapFile.name);
-                return mapData;  //return valid map data
+                validMaps.Add(mapData);
             }
         }
+
+        if(validMaps.Count > 0)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, validMaps.Count);
+            Debug.Log($"Ramndomly selected map index: {randomIndex}");
+            return validMaps[randomIndex];
+        }
+
         Debug.LogWarning("No valid map files found with the minimum dimensions of 15x10.");
         return null;   //no valid map found, log warning and return null
     }
