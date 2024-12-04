@@ -9,6 +9,9 @@ public class HealthSystem : MonoBehaviour
     private int currentHealth;
     public TextMeshProUGUI healthDisplay;
 
+    public delegate void OnDeathEvent(GameObject obj);
+    public static event OnDeathEvent OnDeath;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -39,6 +42,9 @@ public class HealthSystem : MonoBehaviour
     private void Die()
     {
         Debug.Log($"{gameObject.name} has died!");       
+        GameManager.Instance.RemoveObjectFromMap(gameObject);
+        HealthSystem.OnDeath?.Invoke(gameObject);
+        Destroy(gameObject);
     }
 
 }

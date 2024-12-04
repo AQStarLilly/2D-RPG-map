@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -12,9 +13,7 @@ public class PlayerController : MonoBehaviour
     private const float playerZPosition = -1f;  //makes sure player spawns above map instead of below
     public bool isPlayer1 = true;  //checkl if player 1 or 2
     public bool isTurnActive = false;
-
-    public int attackDamage = 10;
-
+    
     private KeyCode upKey;
     private KeyCode downKey;
     private KeyCode leftKey;
@@ -62,11 +61,16 @@ public class PlayerController : MonoBehaviour
         isTurnActive = true;
     }
 
+    private void UpdatePosition(Vector3Int oldPosition, Vector3Int newPosition)
+    {
+        GameManager.Instance.mapObjects.Remove(oldPosition);
+        GameManager.Instance.mapObjects[newPosition] = gameObject;
+    }
     // Update is called once per frame
     void Update()
     {
         if (!isTurnActive) return;
-        
+
         Vector3Int moveDirection = Vector3Int.zero;  //initialize move direction as zero
         if (Input.GetKeyDown(upKey)) moveDirection = Vector3Int.up;
         if (Input.GetKeyDown(downKey)) moveDirection = Vector3Int.down;
@@ -75,36 +79,71 @@ public class PlayerController : MonoBehaviour
 
         if (moveDirection != Vector3Int.zero)  //if a movement direction was input
         {
-            Vector3Int newPosition = playerPosition + moveDirection;  //calc the new player pos based on the move direction
+            Vector3Int newPosition = playerPosition + moveDirection;  //calc the new player pos based on the move direction           
+            Debug.Log($"Player trying to move to {newPosition}");
 
-            Vector3Int targetTilePosition = mapTilemap.WorldToCell(mapTilemap.CellToWorld(newPosition));
-
-            // Check for an enemy at the target position
-            EnemyController enemy = EnemyManager.Instance.GetEnemyAtPosition(targetTilePosition);
-            if (enemy != null)
+            if (GameManager.Instance.mapObjects.ContainsKey(newPosition)) // Check if tile is occupied
             {
-                AttackEnemy(enemy);
-            }
-            else if (IsValidPosition(newPosition))  //check if new pos is valid
-            {
-                playerPosition = newPosition;   //update player pos
-                Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);   //convert the new player pos to world coordinates
-                worldPosition.z = playerZPosition;   //ensure player's z position doesn't change
-                transform.position = worldPosition;
-
+                Debug.Log($"Tile at {newPosition} is occupied.");
+                TryAttack(newPosition); // Attempt to attack
                 EndTurn();
+            }
+            else if (IsValidPosition(newPosition)) // Otherwise move
+            {
+                Debug.Log($"Moving to valid position {newPosition}");
+                MoveToPosition(newPosition);
+            }
+            else
+            {
+                Debug.Log($"Invalid position: {newPosition}");
             }
         }
     }
 
-    void AttackEnemy(EnemyController enemy)
+    private void TryAttack(Vector3Int targetPosition)
     {
-        HealthSystem enemyHealth = enemy.GetComponent<HealthSystem>();
-        if (enemyHealth != null)
+        Debug.Log($"Player attempting to attack at {targetPosition}");
+
+        if (GameManager.Instance.mapObjects.TryGetValue(targetPosition, out GameObject target))
         {
-            enemyHealth.TakeDamage(attackDamage);
-            Debug.Log($"Player attacked {enemy.name}, dealing {attackDamage} damage!");
+            Debug.Log($"Target found at {targetPosition}: {target.name}");
+
+            if (target.CompareTag("Enemy"))
+            {
+                HealthSystem enemyHealth = target.GetComponent<HealthSystem>();
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(5);
+                    Debug.Log("Player attacked the enemy!");
+                }
+                else
+                {
+                    Debug.LogWarning("Enemy found but has no HealthSystem!");
+                }
+            }
+            else
+            {
+                Debug.Log("Target is not an enemy.");
+            }
         }
+        else
+        {
+            Debug.Log("No target found at position.");
+        }
+    }
+
+    private void MoveToPosition(Vector3Int newPosition)
+    {
+        Vector3Int oldPosition = playerPosition;
+        playerPosition = newPosition;
+
+        GameManager.Instance.mapObjects.Remove(oldPosition);
+        GameManager.Instance.mapObjects[newPosition] = gameObject;
+
+        Vector3 worldPosition = mapTilemap.CellToWorld(playerPosition);
+        worldPosition.z = playerZPosition;
+        transform.position = worldPosition;
+
         EndTurn();
     }
 
