@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;    //singleton instance of the gamemanager
+    public GameSettings settings;
     
     public Dictionary<Vector3Int, GameObject> mapObjects = new Dictionary<Vector3Int, GameObject>();  //dictionary to store all objects on the map and their positions
 
@@ -14,13 +15,22 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance == null)  //ensure only 1 instance of the game manager exists
+        if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            Debug.Log("GameManager Awake – loading settings...");
+            settings = GameSettings.LoadSettings();
+
+            if (settings == null)
+                Debug.LogError("Settings returned null!");
+            else
+                Debug.Log($"Settings loaded into GameManager. Player HP = {settings.maxPlayerHealth}");
         }
         else
         {
-            Destroy(gameObject);  //destory duplciate gamemanagers
+            Destroy(gameObject);
         }
     }
 

@@ -67,7 +67,7 @@ public class EnemyController : MonoBehaviour
                 HealthSystem playerHealth = target.GetComponent<HealthSystem>();
                 if (playerHealth != null)
                 {
-                    playerHealth.TakeDamage(5);
+                    playerHealth.TakeDamage(GameManager.Instance.settings.enemyDamage);
                     Debug.Log("Enemy attacked the player!");
                 }
             }

@@ -1,0 +1,6 @@
+{
+  "maxPlayerHealth": 50,
+  "playerDamage": 10,
+  "maxEnemyHealth": 40,
+  "enemyDamage": 10
+}

@@ -15,6 +15,17 @@ public class HealthSystem : MonoBehaviour
 
     void Start()
     {
+        if (CompareTag("Player"))
+        {
+            maxHealth = GameManager.Instance.settings.maxPlayerHealth;
+            Debug.Log($"{gameObject.name} initialized with {maxHealth} HP");
+        }
+        else if (CompareTag("Enemy"))
+        {
+            maxHealth = GameManager.Instance.settings.maxEnemyHealth;
+            Debug.Log($"{gameObject.name} initialized with {maxHealth} HP");
+        }
+
         currentHealth = maxHealth;  //set current health to max
         UpdateHealthDisplay();  //Update Ui to reflect that
     }

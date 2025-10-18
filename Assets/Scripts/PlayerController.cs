@@ -113,7 +113,8 @@ public class PlayerController : MonoBehaviour
                 HealthSystem enemyHealth = target.GetComponent<HealthSystem>();
                 if (enemyHealth != null)
                 {
-                    enemyHealth.TakeDamage(5);
+                    int damage = GameManager.Instance.settings.playerDamage;
+                    enemyHealth.TakeDamage(damage);
                     Debug.Log("Player attacked the enemy!");
                 }
                 else
